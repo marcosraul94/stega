@@ -1,6 +1,4 @@
-import cv2
 import numpy as np
-from operator import add
 
 NUM_BITS = 8
 DTYPE = f'uint{NUM_BITS}'
@@ -24,27 +22,11 @@ class Reader:
 
     @property
     def bytes_shape(self) -> tuple:
-        return self.img.size // (NUM_BITS/2), NUM_BITS/2
+        columns = int(NUM_BITS / 2)
+        return self.img.size // columns, columns
 
     def read_hidden_bytes(self) -> np.ndarray:
-        from datetime import datetime
-        grouped_bits = self._group_bits()
-
-        start = datetime.now()
-        joined_bytes = np.array([
-            int(''.join(bits), 2) for bits in grouped_bits
-        ])
-        diff = (datetime.now() - start).total_seconds()
-        print('joined_bytes slow:', diff)
-        print(grouped_bits.shape)
-
-        start = datetime.now()
-        f = (int(''.join(bits), 2) for bits in grouped_bits)
-        v2 = np.fromiter(f)
-        diff = (datetime.now() - start).total_seconds()
-        print('joined_bytes v2:', diff)
-
-        return joined_bytes
+        raise NotImplementedError
 
     def _group_bits(self) -> np.ndarray:
         bits = self._get_last_2_bits(self.img.flatten())
