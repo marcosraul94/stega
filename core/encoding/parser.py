@@ -31,7 +31,7 @@ class Reader:
         grouped_bits = self._group_bits()
 
         start = datetime.now()
-        joined_bytes =  np.array([
+        joined_bytes = np.array([
             int(''.join(bits), 2) for bits in grouped_bits
         ])
         diff = (datetime.now() - start).total_seconds()
@@ -50,11 +50,10 @@ class Reader:
         bits = self._get_last_2_bits(self.img.flatten())
         return np.resize(bits, self.bytes_shape)
 
-    def _get_last_2_bits(self, array: np.ndarray) -> np.ndarray:
+    @staticmethod
+    def _get_last_2_bits(array: np.ndarray) -> np.ndarray:
         # https://stackoverflow.com/questions/60085470/efficient-way-of-extracting-the-last-two-digits-of-every-element-in-a-numpy-arra'
-        bits_map = np.array(['00', '01', '10', '11'])
-        return bits_map[array & 3]
-
+        return array & 3
 
 
 class InvalidImageException(Exception):
