@@ -5,6 +5,7 @@ from operator import add
 NUM_BITS = 8
 DTYPE = f'uint{NUM_BITS}'
 
+
 class Reader:
     def __init__(self, image: np.ndarray, dtype: str = DTYPE):
         self._img = image
@@ -23,7 +24,7 @@ class Reader:
 
     @property
     def bytes_shape(self) -> tuple:
-        return (self.img.size // 4, 4)
+        return self.img.size // (NUM_BITS/2), NUM_BITS/2
 
     def read_hidden_bytes(self) -> np.ndarray:
         from datetime import datetime
@@ -45,7 +46,7 @@ class Reader:
 
         return joined_bytes
 
-    def _group_bits(self) :
+    def _group_bits(self) -> np.ndarray:
         bits = self._get_last_2_bits(self.img.flatten())
         return np.resize(bits, self.bytes_shape)
 
