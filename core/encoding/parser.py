@@ -1,33 +1,60 @@
 import cv2
 import numpy as np
+from operator import add
 
-
-img_path = '/Users/intellisys/study/stega/test_img.jpg'
-
+NUM_BITS = 8
+DTYPE = f'uint{NUM_BITS}'
 
 class Reader:
-    def __init__(self, img_path: str):
-        self.img = cv2.imread(img_path)
+    def __init__(self, image: np.ndarray, dtype: str = DTYPE):
+        self._img = image
+        self.dtype = np.dtype(dtype)
+ 
+    @property
+    def img(self) -> np.ndarray:
+        return self._img
+           
+    @img.setter
+    def img(self, img: np.ndarray) -> None:
+        if not img.size:
+            raise InvalidImageException('Invalid image data.')
+
+        self._img = img.astype(self.dtype) if img.dtype == self.dtype else img
+
+    @property
+    def bytes_shape(self) -> tuple:
+        return (self.img.size // 4, 4)
+
+    def read_hidden_bytes(self) -> np.ndarray:
+        from datetime import datetime
+        grouped_bits = self._group_bits()
+
+        start = datetime.now()
+        joined_bytes =  np.array([
+            int(''.join(bits), 2) for bits in grouped_bits
+        ])
+        diff = (datetime.now() - start).total_seconds()
+        print('joined_bytes slow:', diff)
+        print(grouped_bits.shape)
+
+        start = datetime.now()
+        f = (int(''.join(bits), 2) for bits in grouped_bits)
+        v2 = np.fromiter(f)
+        diff = (datetime.now() - start).total_seconds()
+        print('joined_bytes v2:', diff)
+
+        return joined_bytes
+
+    def _group_bits(self) :
+        bits = self._get_last_2_bits(self.img.flatten())
+        return np.resize(bits, self.bytes_shape)
+
+    def _get_last_2_bits(self, array: np.ndarray) -> np.ndarray:
+        # https://stackoverflow.com/questions/60085470/efficient-way-of-extracting-the-last-two-digits-of-every-element-in-a-numpy-arra'
+        bits_map = np.array(['00', '01', '10', '11'])
+        return bits_map[array & 3]
 
 
-def get_bits(x: int) -> str:
-    return str(bin(x))[-2:]
 
-
-if __name__ == '__main__':
-    reader = Reader(img_path)
-    img = reader.img
-    pixels = img.flatten()
-    from datetime import datetime
-    now = datetime.now()
-    m1 = np.array(bin(x).zfill(2)[-2:] for x in pixels)
-    print((datetime.now() - now).total_seconds())
-
-    now = datetime.now()
-    converter = np.vectorize(lambda x: np.binary_repr[-2:].replace('b', '0'))
-    m2 = converter(pixels)
-    print((datetime.now() - now).total_seconds())
-
-    a = 0
-    converted = bin(a)[-2:].replace('b', '0')
-    print(converted)
+class InvalidImageException(Exception):
+    pass
