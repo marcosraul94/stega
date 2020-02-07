@@ -6,9 +6,9 @@ DTYPE = f'uint{NUM_BITS}'
 
 class Reader:
     def __init__(self, image: np.ndarray, dtype: str = DTYPE):
-        self._img = image
         self.dtype = np.dtype(dtype)
- 
+        self.img = image
+
     @property
     def img(self) -> np.ndarray:
         return self._img
@@ -25,16 +25,27 @@ class Reader:
         columns = int(NUM_BITS / 2)
         return self.img.size // columns, columns
 
-    def read_hidden_bytes(self) -> np.ndarray:
-        raise NotImplementedError
+    def read_hidden_bytes(self) -> int:
+        grouped_bits = self._group_bits(self.img)
+        joined_bits = self._join_bits(grouped_bits)
+        return int(''.join(str(row) for row in joined_bits))
 
-    def _group_bits(self) -> np.ndarray:
-        bits = self._get_last_2_bits(self.img.flatten())
+    @staticmethod
+    def _join_bits(array: np.ndarray) -> np.ndarray:
+        # array = [ [0, 0, 0, 0], [0, 0, 0, 1], ... [3, 3, 3, 3] ]
+        # output = [0, 1, ... 255]
+        mapper_matrix = [64, 16, 4, 1]
+        return np.dot(array, mapper_matrix)
+
+    def _group_bits(self, matrix: np.ndarray) -> np.ndarray:
+        bits = self._get_last_2_bits(matrix.flatten())
         return np.resize(bits, self.bytes_shape)
 
     @staticmethod
     def _get_last_2_bits(array: np.ndarray) -> np.ndarray:
         # https://stackoverflow.com/questions/60085470/efficient-way-of-extracting-the-last-two-digits-of-every-element-in-a-numpy-arra'
+        # array = [12, 55, 42, 0, ...]
+        # output = [0, 11, 10, 11 ...]
         return array & 3
 
 
