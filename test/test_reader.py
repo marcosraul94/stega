@@ -50,7 +50,7 @@ class ReaderTests(unittest.TestCase):
         self.assertTrue(dividable_by_num_columns)
 
     def test_read_hidden_bytes(self) -> None:
-        raise NotImplementedError
+        self.assertTrue(False, msg='Not implemented')
 
     def test_read_hidden_bytes_type(self) -> None:
         hidden_bytes = self.reader.read_hidden_bytes()
