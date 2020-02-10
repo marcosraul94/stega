@@ -4,10 +4,10 @@ from core.config import DEFAULT_CONFIG
 
 
 class Reader:
-    def __init__(self, 
-        image: np.ndarray, 
-        dtype: np.dtype = DEFAULT_CONFIG.dtype, 
-        num_columns: int = DEFAULT_CONFIG.num_columns):
+    def __init__(self,
+                 image: np.ndarray,
+                 dtype: np.dtype = DEFAULT_CONFIG.dtype,
+                 num_columns: int = DEFAULT_CONFIG.num_columns):
 
         self.dtype = dtype
         self.num_columns = num_columns

@@ -3,10 +3,10 @@ from core.config import DEFAULT_CONFIG
 
 class Converter:
     def __init__(self, encoding: str = DEFAULT_CONFIG.encoding):
-        """
+        f"""
         Converts data between text and integers.
-        @param encoding: Encoding scheme to convert a string into a bytes object and vice versa."""
-        f"""Default is '{DEFAULT_CONFIG.encoding}'.
+        @param encoding: Encoding scheme to convert a string into a bytes object and vice versa.\
+        Default is '{DEFAULT_CONFIG.encoding}'.
         """
         self.encoding = encoding
 
