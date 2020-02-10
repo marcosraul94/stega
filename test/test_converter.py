@@ -1,21 +1,22 @@
-import string
 import unittest
 from time import time
 
+from test.values import CHAR_POOL
+from test.values import MAX_EXEC_SECONDS
 from core.converter import Converter
 
 
 class ConverterTests(unittest.TestCase):
     def setUp(self) -> None:
         self.converter = Converter()
-        self.char_pool = string.printable + 'áéíóúñ'
+        self.char_pool = CHAR_POOL
         self.large_text = self.char_pool * 1000
-        self.max_seconds = 0.1
+        self.max_seconds = MAX_EXEC_SECONDS
 
     def test_decode_encode(self) -> None:
         encoded = self.converter.encode(self.char_pool)
         decoded = self.converter.decode(encoded)
-        self.assertEqual(self.char_pool, decoded)
+        self.assertEqual(decoded, self.char_pool)
 
     def test_decode_type(self) -> None:
         encoded = self.converter.encode(self.char_pool)
@@ -24,7 +25,7 @@ class ConverterTests(unittest.TestCase):
 
     def test_encode_type(self) -> None:
         encoded = self.converter.encode(self.char_pool)
-        self.assertIsInstance(encoded, bytes)
+        self.assertIsInstance(encoded, bytearray)
 
     def test_decode_speed(self) -> None:
         encoded_text = self.converter.encode(self.large_text)

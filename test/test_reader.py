@@ -5,15 +5,20 @@ from time import time
 
 from core.reader import Reader
 from core.reader import InvalidImageException
-from core.converter import DEFAULT_CONFIG
+from core.config import DEFAULT_CONFIG
+from test.values import CHAR_POOL
+from test.values import BIG_IMG
+from test.values import SMALL_IMG
+from test.values import LARGE_SIZE
+from test.values import MAX_EXEC_SECONDS
 
 
 class ReaderTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.reader = Reader(np.arange(2 ** DEFAULT_CONFIG.num_bits))
-        self.max_seconds = 0.1
-        self.large_size = 5000000
-        self.big_img = np.random.randint(0, 2**DEFAULT_CONFIG.num_bits, self.large_size)
+        self.reader = Reader(SMALL_IMG)
+        self.max_seconds = MAX_EXEC_SECONDS
+        self.large_size = LARGE_SIZE
+        self.big_img = BIG_IMG
 
     def test_img_type(self) -> None:
         self.assertIsInstance(self.reader.img, np.ndarray)
@@ -73,14 +78,12 @@ class ReaderTests(unittest.TestCase):
         self.assertTrue(np.array_equal(output, correct_output))
 
     def test_join_bits_type(self) -> None:
-        reader = Reader(np.random.randint(0, 2**DEFAULT_CONFIG.num_encoding_bits, 10))
-        matrix = np.resize(reader.img, reader.bytes_shape).astype(reader.dtype)
+        matrix = np.resize(self.reader.img, self.reader.bytes_shape).astype(self.reader.dtype)
         output = self.reader._join_bits(matrix)
         self.assertIsInstance(output, np.ndarray)
 
     def test_join_bits_dtype(self) -> None:
-        reader = Reader(np.random.randint(0, 2**DEFAULT_CONFIG.num_encoding_bits, 10))
-        matrix = np.resize(reader.img, reader.bytes_shape).astype(reader.dtype)
+        matrix = np.resize(self.reader.img, self.reader.bytes_shape).astype(self.reader.dtype)
         output = self.reader._join_bits(matrix)
         self.assertEqual(output.dtype, self.reader.dtype)
 

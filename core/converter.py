@@ -9,8 +9,8 @@ class Converter:
         """
         self.encoding = encoding
 
-    def encode(self, text: str) -> bytes:
-        return text.encode(self.encoding)
+    def encode(self, text: str) -> bytearray:
+        return bytearray(text.encode(self.encoding))
 
-    def decode(self, bytes_encoded: bytes) -> str:
+    def decode(self, bytes_encoded: bytearray) -> str:
         return bytes_encoded.decode(encoding=self.encoding)
