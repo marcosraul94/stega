@@ -54,20 +54,24 @@ class WriterTests(unittest.TestCase):
         is_bin = lambda x: x[:2] == '0b' and all(bit in '10' for bit in x[2:])
         self.assertTrue(all(is_bin(bits) for bits in output))
 
+    def test_uniform_bytes(self) -> None:
+        matrix = np.array(['0b100', ])
+        correct_output = np.array(['00000100', ])
+        output = self.writer._uniform_bytes(matrix)
+        self.assertTrue(np.array_equal(output, correct_output))
+
     def test_split_into_column_bits(self) -> None:
-        img = np.array([1, 2, 3, 4])
-        writer = Writer(img)
+        img = np.array(['00000001', '00000010', '00000011', '00000100'])
+        writer = Writer(img, num_bits=8, num_encoding_bits=2)
         correct_output = [
             [0, 0, 0, 1],
-            [0, 0, 0, 10],
-            [0, 0, 0, 11],
+            [0, 0, 0, 2],
+            [0, 0, 0, 3],
             [0, 0, 1, 0]
         ]
-        
-        data_split = writer._split_into_ints(writer.img)
-        binary = writer._to_binary(data_split)
-        output = writer._split_into_column_bits(binary)
+        output = writer._split_into_column_bits(img)
         self.assertTrue(np.array_equal(output, correct_output))
+
 
 if __name__ == '__main__':
     unittest.main()

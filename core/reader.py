@@ -1,6 +1,7 @@
 import numpy as np
 
 from core.config import DEFAULT_CONFIG
+from core.image import InvalidImageException
 
 
 class Reader:
@@ -51,7 +52,3 @@ class Reader:
         # array = [12, 55, 42, 0, ...]
         # output = [0, 11, 10, 11 ...]
         return matrix & 3
-
-
-class InvalidImageException(Exception):
-    pass

@@ -1,15 +1,16 @@
 import numpy as np
 from core.reader import Reader
 from core.config import DEFAULT_CONFIG
+from core.image import InvalidImageException
 
 
 class Writer:
-    def __init__(self, 
-        image: np.ndarray, 
-        dtype: np.dtype = DEFAULT_CONFIG.dtype, 
-        num_columns: int = DEFAULT_CONFIG.num_columns,
-        num_bits: int = DEFAULT_CONFIG.num_bits,
-        num_encoding_bits: int = DEFAULT_CONFIG.num_encoding_bits):
+    def __init__(self,
+                 image: np.ndarray,
+                 dtype: np.dtype = DEFAULT_CONFIG.dtype,
+                 num_columns: int = DEFAULT_CONFIG.num_columns,
+                 num_bits: int = DEFAULT_CONFIG.num_bits,
+                 num_encoding_bits: int = DEFAULT_CONFIG.num_encoding_bits):
 
         self.dtype = dtype
         self.num_columns = num_columns
@@ -43,7 +44,8 @@ class Writer:
         
         data_split = self._split_into_ints(data)
         binary = self._to_binary(data_split)
-        grouped_bits = self._split_into_column_bits(binary)
+        uniformed_bytes = self._uniform_bytes(binary)
+        grouped_bits = self._split_into_column_bits(uniformed_bytes)
         resized_data = self._resize(grouped_bits)
         
         encoding_mask = '1'*self.num_encoding_bits
@@ -61,16 +63,27 @@ class Writer:
     def _to_binary(ints: np.ndarray) -> np.ndarray:
         return np.array([bin(x) for x in ints.flatten()])
 
-    def _split_into_column_bits(self, binary: np.ndarray):
-        # input ['0b0', '0b10', '0b11', '0b100']
-        
+    @staticmethod
+    def _uniform_bytes(matrix: np.ndarray):
+        # input ['0b100', ]
+        # output [ '00000100', ]
+        return np.array([bits.replace('b', '0').zfill(8) for bits in matrix])
+
+    def _split_into_column_bits(self, matrix: np.ndarray) -> np.ndarray:
+        # input ['00000100', ]
+        # output [ [0, 0, 1, 0], ]
+        output = []
+        for bits in matrix:
+            iterations = 4
+            step = 2
+            for i in iterations:
 
 
-        extract_bits = lambda bits: int(bits.replace('b', '0'), 2)
-        # not all ints take full 8 chars, use enumerate instead
-        iterations = range(0, self.num_bits, self.num_encoding_bits)
+
+
+
         return np.array(list(
-            extract_bits(bits[i:i+2]) for i in iterations for bits in binary
+            int(bits[i:i+self.num_encoding_bits], 2) for i in iterations for bits in matrix
         ))
 
     def _resize(self, matrix: np.ndarray) -> np.ndarray:
