@@ -64,7 +64,7 @@ class Writer:
         return np.array([bin(x) for x in ints.flatten()])
 
     @staticmethod
-    def _uniform_bytes(matrix: np.ndarray):
+    def _uniform_bytes(matrix: np.ndarray) -> np.ndarray:
         # input ['0b100', ]
         # output [ '00000100', ]
         return np.array([bits.replace('b', '0').zfill(8) for bits in matrix])
@@ -72,19 +72,11 @@ class Writer:
     def _split_into_column_bits(self, matrix: np.ndarray) -> np.ndarray:
         # input ['00000100', ]
         # output [ [0, 0, 1, 0], ]
-        output = []
-        for bits in matrix:
-            iterations = 4
-            step = 2
-            for i in iterations:
-
-
-
-
-
-        return np.array(list(
-            int(bits[i:i+self.num_encoding_bits], 2) for i in iterations for bits in matrix
-        ))
+        return np.array([
+            np.array([
+                int(bits[i*2: (i+1)*2], 2) for i in range(4)
+            ]) for bits in matrix
+        ])
 
     def _resize(self, matrix: np.ndarray) -> np.ndarray:
         shallow_copy = np.copy(matrix)

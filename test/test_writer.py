@@ -62,14 +62,13 @@ class WriterTests(unittest.TestCase):
 
     def test_split_into_column_bits(self) -> None:
         img = np.array(['00000001', '00000010', '00000011', '00000100'])
-        writer = Writer(img, num_bits=8, num_encoding_bits=2)
         correct_output = [
             [0, 0, 0, 1],
             [0, 0, 0, 2],
             [0, 0, 0, 3],
             [0, 0, 1, 0]
         ]
-        output = writer._split_into_column_bits(img)
+        output = self.writer._split_into_column_bits(img)
         self.assertTrue(np.array_equal(output, correct_output))
 
 
