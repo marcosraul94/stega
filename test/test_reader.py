@@ -4,9 +4,8 @@ import itertools
 from time import time
 
 from core.reader import Reader
+from core.converter import Converter
 from core.reader import InvalidImageException
-from core.config import DEFAULT_CONFIG
-from test.values import CHAR_POOL
 from test.values import BIG_IMG
 from test.values import SMALL_IMG
 from test.values import LARGE_SIZE
@@ -54,8 +53,22 @@ class ReaderTests(unittest.TestCase):
         dividable_by_num_columns = (size % self.reader.num_columns) == 0
         self.assertTrue(dividable_by_num_columns)
 
-    # def test_read_hidden_bytes(self) -> None:
-    #     raise NotImplementedError
+    def test_read_hidden_bytes(self) -> None:
+        txt = 'á'
+        encoding = 'utf-8'
+        converter = Converter(encoding)
+        encoded = converter.encode(txt)  # b'\xc3\xa1'
+        # writer mock
+        ints = np.frombuffer(encoded, 'uint8')  # [195, 161]
+        bins = [bin(x).replace('0b', '').zfill(8) for x in ints]  # ['11000011', '10100001']
+        split_bins = [['11', '00', '00', '11'], ['10', '10', '00', '01']]
+        split_dec = np.array([[3, 0, 0, 3], [2, 2, 0, 1]]).flatten()
+        masked_img = np.arange(8).astype('uint8') & int('11111100', 2)
+        encoded_img = masked_img + split_dec
+        # end writer mock
+        encoded_bytes = Reader(encoded_img).read_hidden_bytes()
+        output = converter.decode(encoded_bytes)
+        self.assertEqual(output, txt)
 
     def test_read_hidden_bytes_type(self) -> None:
         hidden_bytes = self.reader.read_hidden_bytes()
@@ -122,7 +135,7 @@ class ReaderTests(unittest.TestCase):
 
     def test_get_last_2_bits(self) -> None:
         correct_output = np.array([int(bin(x)[-2:].replace('b', '0'), 2) for x in self.reader.img])
-        output = self.reader._get_last_2_bits(self.reader.img.flatten())
+        output = self.reader._get_last_bits(self.reader.img.flatten())
         self.assertTrue(np.array_equal(output, correct_output))
 
 

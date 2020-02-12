@@ -8,10 +8,12 @@ class Reader:
     def __init__(self,
                  image: np.ndarray,
                  dtype: np.dtype = DEFAULT_CONFIG.dtype,
-                 num_columns: int = DEFAULT_CONFIG.num_columns):
+                 num_columns: int = DEFAULT_CONFIG.num_columns,
+                 num_encoding_bits: int = DEFAULT_CONFIG.num_encoding_bits):
 
         self.dtype = dtype
         self.num_columns = num_columns
+        self.num_encoding_bits = num_encoding_bits
         self.img = image
 
     @property
@@ -30,7 +32,6 @@ class Reader:
         return self.img.size // self.num_columns, self.num_columns
 
     def read_hidden_bytes(self) -> bytearray:
-        # needs to be tested
         grouped_bits = self._group_bits(self.img)
         joined_bits = self._join_bits(grouped_bits)
         return bytearray(np.frombuffer(joined_bits, dtype=self.dtype))
@@ -43,12 +44,11 @@ class Reader:
         return np.dot(array, mapper_matrix).astype(self.dtype)
 
     def _group_bits(self, matrix: np.ndarray) -> np.ndarray:
-        bits = self._get_last_2_bits(matrix.flatten())
+        bits = self._get_last_bits(matrix.flatten())
         return np.resize(bits, self.bytes_shape)
 
-    @staticmethod
-    def _get_last_2_bits(matrix: np.ndarray) -> np.ndarray:
+    def _get_last_bits(self, matrix: np.ndarray) -> np.ndarray:
         # https://stackoverflow.com/questions/60085470/efficient-way-of-extracting-the-last-two-digits-of-every-element-in-a-numpy-arra'
         # array = [12, 55, 42, 0, ...]
         # output = [0, 11, 10, 11 ...]
-        return matrix & 3
+        return matrix & int('1'*self.num_encoding_bits, 2)

@@ -5,7 +5,7 @@ from core.config import DEFAULT_CONFIG
 
 
 # text mock related
-CHAR_POOL = string.printable + 'áéíóúñ'
+CHAR_POOL = string.ascii_uppercase + string.ascii_lowercase + string.digits + string.punctuation + 'áéíóúñ'
 # img mock related
 LARGE_SIZE = 5000000
 BIG_IMG = np.random.randint(0, 2**DEFAULT_CONFIG.num_bits, LARGE_SIZE)

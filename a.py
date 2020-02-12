@@ -2,7 +2,7 @@ import numpy as np
 from core.reader import Reader
 
 
-phrase = 'hola Cosita es mía'
+phrase = 'aeioú'
 encoded = phrase.encode()
 ints = np.frombuffer(encoded, dtype='uint8')
 binaries = [bin(x) for x in ints]
@@ -30,13 +30,10 @@ prhase = encoded_rebuilt.decode()
 # print('ints:', ints)
 # print('other ints:', other_ints)
 # print('last_2_bits:', last_2_bits)
-print(bin(255))
-print('binaries:', binaries[0])
-print('split:', split[0])
+# print('binaries:', bytearray(encoded))
+# print('ints:', ints)
 # print('img:', img)
 # print('img masked:', img_masked)
 # print('resized:', resized)
 # print('img with encoded bits:', img_with_encoded_bits)
 # print(prhase)
-
-

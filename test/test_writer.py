@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 
+from core.config import Config
 from core.writer import Writer
 from core.config import DEFAULT_CONFIG
 from core.converter import Converter
@@ -70,6 +71,79 @@ class WriterTests(unittest.TestCase):
         ]
         output = self.writer._split_into_column_bits(img)
         self.assertTrue(np.array_equal(output, correct_output))
+
+    def test_split_into_column_bits_type(self) -> None:
+        img = np.array(['00000001', ])
+        output = self.writer._split_into_column_bits(img)
+        self.assertIsInstance(output, np.ndarray)
+
+    def test_resize_shape(self) -> None:
+        size = 10
+        config = Config(num_bytes=1, num_encoding_bits=2)
+        img = np.arange(size)
+        writer = Writer(img, num_encoding_bits=config.num_encoding_bits, num_bits=config.num_bits)
+        correct_shape = img.shape
+        output_shape = writer._resize(np.arange(size - 1)).shape
+        self.assertTupleEqual(output_shape, correct_shape)
+
+    def test_resize_add_missing_zeros(self) -> None:
+        size = 10
+        diff = size - 5
+        config = Config(num_bytes=1, num_encoding_bits=2)
+        img = np.arange(size)
+        writer = Writer(img, num_encoding_bits=config.num_encoding_bits, num_bits=config.num_bits)
+        zeros = writer._resize(np.arange(diff))[diff:]
+        self.assertTrue(np.array_equal(np.zeros((size-diff,)), zeros))
+
+    def test_apply_mask(self) -> None:
+        matrix = np.array([255])
+        writer = Writer(matrix, num_bits=8, num_encoding_bits=2)
+        correct_output = np.array([int(bin(value).replace('0b', '')[:-2] + '00', 2) for value in matrix])
+        output = writer._apply_mask(matrix, '1'*6 + '00')
+        self.assertTrue(np.array_equal(output, correct_output))
+
+    def test_apply_mask_type(self) -> None:
+        output = self.writer._apply_mask(self.writer.img, '1')
+        self.assertIsInstance(output, np.ndarray)
+
+    def test_apply_mask_dtype(self) -> None:
+        matrix = np.arange(10).astype(DEFAULT_CONFIG.dtype)
+        output = self.writer._apply_mask(matrix, '1').dtype
+        correct_output = DEFAULT_CONFIG.dtype
+        self.assertEqual(output, correct_output)
+
+    def test_prepare_input(self) -> None:
+        converter = Converter()
+        txt = 'a'
+        in_bytes = converter.encode(txt)
+        img = np.arange(2)
+        writer = Writer(img, num_encoding_bits=2)
+
+
+
+
+
+
+    def test_prepare_input_shape(self) -> None:
+        raise NotImplementedError
+
+    def test_prepare_input_type(self) -> None:
+        raise NotImplementedError
+
+    def test_prepare_input_dtype(self) -> None:
+        raise NotImplementedError
+
+    def test_prepare_img(self) -> None:
+        raise NotImplementedError
+
+    def test_prepare_img_shape(self) -> None:
+        raise NotImplementedError
+
+    def test_prepare_img_type(self) -> None:
+        raise NotImplementedError
+
+    def test_prepare_img_dtype(self) -> None:
+        raise NotImplementedError
 
 
 if __name__ == '__main__':
