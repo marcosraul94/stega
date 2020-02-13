@@ -3,6 +3,7 @@ import numpy as np
 
 from core.config import Config
 from core.writer import Writer
+from core.reader import Reader
 from core.config import DEFAULT_CONFIG
 from core.converter import Converter
 from test.values import CHAR_POOL
@@ -22,7 +23,12 @@ class WriterTests(unittest.TestCase):
         self.big_img = BIG_IMG
 
     def test_insert_bytes(self) -> None:
-        raise NotImplementedError
+        converter = Converter()
+        encoded = converter.encode(self.char_pool)
+        encoded_img = Writer(np.arange(len(self.char_pool)*4)).insert_bytes(encoded)
+        reconstructed_encoded_info = Reader(encoded_img).read_hidden_bytes()
+        reconstructed_decoded_info = converter.decode(reconstructed_encoded_info)
+        self.assertEqual(reconstructed_decoded_info, self.char_pool)
 
     def test_split_into_ints(self) -> None:
         encoded = self.converter.encode(self.char_pool)
@@ -118,32 +124,37 @@ class WriterTests(unittest.TestCase):
         in_bytes = converter.encode(txt)
         img = np.arange(2)
         writer = Writer(img, num_encoding_bits=2)
-
-
-
-
-
+        raise NotImplementedError
 
     def test_prepare_input_shape(self) -> None:
-        raise NotImplementedError
+        shape = self.writer._prepare_input(self.writer.img).shape
+        correct_shape = self.writer.img.shape
+        self.assertEqual(shape, correct_shape)
 
     def test_prepare_input_type(self) -> None:
-        raise NotImplementedError
+        output = self.writer._prepare_input(self.writer.img)
+        self.assertIsInstance(output, np.ndarray)
 
     def test_prepare_input_dtype(self) -> None:
-        raise NotImplementedError
+        output_dtype = self.writer._prepare_input(self.writer.img).dtype
+        correct_dtype = self.writer.dtype
+        self.assertEqual(output_dtype, correct_dtype)
 
     def test_prepare_img(self) -> None:
         raise NotImplementedError
 
     def test_prepare_img_shape(self) -> None:
-        raise NotImplementedError
+        output_shape = self.writer._prepare_img(self.writer.img).shape
+        correct_shape = self.writer.img.shape
+        self.assertEqual(output_shape, correct_shape)
 
     def test_prepare_img_type(self) -> None:
-        raise NotImplementedError
+        output = self.writer._prepare_img(self.writer.img)
+        self.assertIsInstance(output, np.ndarray)
 
     def test_prepare_img_dtype(self) -> None:
-        raise NotImplementedError
+        output_dtype = self.writer._prepare_img(self.writer.img)
+        correct_dtype = self.writer.img.dtype
 
 
 if __name__ == '__main__':

@@ -33,28 +33,10 @@ class Writer:
     def bytes_shape(self) -> tuple:
         return self.img.size // self.num_columns, self.num_columns
 
-    def insert_bytes(self, data: bytearray) -> np.ndarray:
-        # steps
-        # 1 -> split the data in an int list
-        # 2 -> convert each int into a binary repr
-        # 3 -> split each binary int num columns last bits 
-        # 4 -> resize that split to match image shape (data is ready to be added to the img)
-        # 4 -> apply mask to image to clean last num of bits
-        # 5 -> add image_masked and data_ready
-        
-        data_split = self._split_into_ints(data)
-        binary = self._to_binary(data_split)
-        uniformed_bytes = self._uniform_bytes(binary)
-        grouped_bits = self._split_into_column_bits(uniformed_bytes)
-        resized_data = self._resize(grouped_bits)
-        
-        encoding_mask = '1'*self.num_encoding_bits
-        masked_data = self._apply_mask(resized_data, encoding_mask)
-        
-        img_mask = '1'*(self.num_bits - self.num_encoding_bits) + '0'*self.num_encoding_bits
-        masked_img = self._apply_mask(self.img, img_mask)
-
-        return masked_img + masked_data
+    def insert_bytes(self, data: bytearray) -> np.ndarray:        
+        encoded_data_as_img = self._prepare_input(data)
+        masked_img = self._prepare_img(self.img)
+        return (masked_img + encoded_data_as_img).astype(self.dtype)
 
     def _prepare_input(self, data: bytearray):
         data_split = self._split_into_ints(data)
@@ -64,11 +46,11 @@ class Writer:
         resized_data = self._resize(grouped_bits)
 
         encoding_mask = '1' * self.num_encoding_bits
-        return self._apply_mask(resized_data, encoding_mask)
+        return self._apply_mask(resized_data, encoding_mask).astype(self.dtype)
 
     def _prepare_img(self, img: np.ndarray):
         img_mask = '1'*(self.num_bits - self.num_encoding_bits) + '0'*self.num_encoding_bits
-        return self._apply_mask(img, img_mask)
+        return self._apply_mask(img, img_mask).astype(self.dtype)
 
     def _split_into_ints(self, data: bytearray) -> np.ndarray:
         # input b'aeio\xc3\xba'
