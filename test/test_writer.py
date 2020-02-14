@@ -119,12 +119,21 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(output, correct_output)
 
     def test_prepare_input(self) -> None:
-        converter = Converter()
-        txt = 'a'
-        in_bytes = converter.encode(txt)
-        img = np.arange(2)
-        writer = Writer(img, num_encoding_bits=2)
-        raise NotImplementedError
+        in_bytearray = Converter().encode('aá&^')  # b'a\xc3\xa1&^'
+        in_ints = np.frombuffer(in_bytearray, dtype=self.writer.dtype)  # [97, 195, 161, 38, 94]
+        in_binary = [bin(x) for x in in_ints]  # ['01100001', '11000011', '10100001', '00100110', '01011110']
+        # ['01', '10', '00', '01'], ['11', '00', '00', '11'], ['10', '10', '00', '01'], ['00', '10', '01', '10'], ['01', '01', '11', '10']
+        img = np.arange(20).reshape(5, 4)
+        # img ['0b0', '0b1', '0b10', '0b11', '0b100', '0b101', '0b110', '0b111', '0b1000', '0b1001', '0b1010', '0b1011', '0b1100', '0b1101', '0b1110', '0b1111', '0b10000', '0b10001', '0b10010', '0b10011']
+        # masked [ 0  0  0  0  4  4  4  4  8  8  8  8 12 12 12 12 16 16 16 16]
+        masked_img = img & int('11111100', 2)
+        masked_data = np.array([[1, 2, 0, 1], [3, 0, 0, 3], [2, 2, 0, 1], [0, 2, 1, 2], [1, 1, 3, 2]])
+        correct_output = masked_data + masked_img
+        output = Writer(img).insert_bytes(in_bytearray)
+        print(output)
+        print(correct_output)
+        self.assertTrue(np.array_equal(output, correct_output))
+
 
     def test_prepare_input_shape(self) -> None:
         shape = self.writer._prepare_input(self.writer.img).shape
@@ -141,7 +150,11 @@ class WriterTests(unittest.TestCase):
         self.assertEqual(output_dtype, correct_dtype)
 
     def test_prepare_img(self) -> None:
-        raise NotImplementedError
+        matrix = np.array([255, 124])  # [11111111, 01111100]
+        writer = Writer(matrix, num_bits=8, num_encoding_bits=2)  # mask 11111100
+        correct_output = np.array([252, 124])  # [11111100, 01111100]
+        output = writer._prepare_img(matrix)
+        self.assertTrue(np.array_equal(output, correct_output))
 
     def test_prepare_img_shape(self) -> None:
         output_shape = self.writer._prepare_img(self.writer.img).shape
