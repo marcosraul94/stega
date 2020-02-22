@@ -16,12 +16,14 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(self.config.dtype, np.uint16)
 
     def test_num_columns(self) -> None:
-        self.config = Config(num_bytes = 4, num_encoding_bits = 4)
+        self.config = Config(num_bytes=4, num_encoding_bits=4)
         self.assertEqual(self.config.num_columns, 8)
 
     def test_num_bits(self) -> None:
-        self.config = Config(num_bytes = 4)
-        self.assertEqual(self.config.num_bits, 32)
+        num_bytes = 4
+        num_bits = 4 * 8
+        self.config = Config(num_bytes=num_bytes)
+        self.assertEqual(self.config.num_bits, num_bits)
 
 
 if __name__ == '__main__':
