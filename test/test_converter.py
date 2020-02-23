@@ -4,6 +4,7 @@ from time import time
 from core.converter import Converter
 from test.values import Constants
 
+
 class ConverterSetup(unittest.TestCase):
     def setUp(self) -> None:
         self.converter = Converter()
@@ -42,7 +43,7 @@ class DecodeTests(ConverterSetup):
         decoded = self.converter.decode(encoded)
         self.assertIsInstance(decoded, str)
 
-    def test_decode_speed(self) -> None:
+    def test_speed(self) -> None:
         encoded_text = self.converter.encode(self.constants.long_text)
         start = time()
         self.converter.decode(encoded_text)

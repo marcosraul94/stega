@@ -1,48 +1,53 @@
 import unittest
 import numpy as np
 
-from core.config import Config
 from core.writer import Writer
 from core.reader import Reader
+from test.values import Constants
+from core.config import Config
 from core.config import DEFAULT_CONFIG
 from core.converter import Converter
-from test.values import CHAR_POOL
-from test.values import BIG_IMG
-from test.values import SMALL_IMG
-from test.values import LARGE_SIZE
-from test.values import MAX_EXEC_SECONDS
+
+
+class WriterSetup(unittest.TestCase):
+    def setUp(self) -> None:
+        self.constants = Constants
+        self.writer = Writer(self.constants.small_img)
+        self.converter = Converter()
+
+
+
+
+
 
 
 class WriterTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.writer = Writer(SMALL_IMG)
+        self.constants = Constants
+        self.writer = Writer(self.constants.small_img)
         self.converter = Converter()
-        self.char_pool = CHAR_POOL
-        self.max_seconds = MAX_EXEC_SECONDS
-        self.large_size = LARGE_SIZE
-        self.big_img = BIG_IMG
 
     def test_insert_bytes(self) -> None:
         converter = Converter()
-        encoded = converter.encode(self.char_pool)
-        encoded_img = Writer(np.arange(len(self.char_pool)*4)).insert_bytes(encoded)
+        encoded = converter.encode(self.constants.char_pool)
+        encoded_img = Writer(np.arange(len(self.constants.char_pool)*4)).insert_bytes(encoded)
         reconstructed_encoded_info = Reader(encoded_img).read_hidden_bytes()
         reconstructed_decoded_info = converter.decode(reconstructed_encoded_info)
-        self.assertEqual(reconstructed_decoded_info, self.char_pool)
+        self.assertEqual(reconstructed_decoded_info, self.constants.char_pool)
 
     def test_split_into_ints(self) -> None:
-        encoded = self.converter.encode(self.char_pool)
+        encoded = self.converter.encode(self.constants.char_pool)
         correct_output = np.array(list(encoded))
         output = self.writer._split_into_ints(encoded)
         self.assertTrue(np.array_equal(output, correct_output))
 
     def test_split_into_ints_type(self) -> None:
-        encoded = self.converter.encode(self.char_pool)
+        encoded = self.converter.encode(self.constants.char_pool)
         output = self.writer._split_into_ints(encoded)
         self.assertIsInstance(output, np.ndarray)
 
     def test_split_into_ints_dtype(self) -> None:
-        encoded = self.converter.encode(self.char_pool)
+        encoded = self.converter.encode(self.constants.char_pool)
         output = self.writer._split_into_ints(encoded)
         self.assertEqual(output.dtype, DEFAULT_CONFIG.dtype)
 

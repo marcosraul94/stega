@@ -35,7 +35,7 @@ class Writer:
 
     def insert_bytes(self, data: bytearray) -> np.ndarray:        
         encoded_data_as_img = self._prepare_input(data)
-        masked_img = self._prepare_img(self.img)
+        masked_img = self._prepare_img()
         return (masked_img + encoded_data_as_img).astype(self.dtype)
 
     def _prepare_input(self, data: bytearray):
@@ -48,9 +48,9 @@ class Writer:
         encoding_mask = '1' * self.num_encoding_bits
         return self._apply_mask(resized_data, encoding_mask).astype(self.dtype)
 
-    def _prepare_img(self, img: np.ndarray):
+    def _prepare_img(self) -> np.ndarray:
         img_mask = '1'*(self.num_bits - self.num_encoding_bits) + '0'*self.num_encoding_bits
-        return self._apply_mask(img, img_mask).astype(self.dtype)
+        return self._apply_mask(self.img, img_mask).astype(self.dtype)
 
     def _split_into_ints(self, data: bytearray) -> np.ndarray:
         # input b'aeio\xc3\xba'
@@ -83,7 +83,7 @@ class Writer:
         return shallow_copy
 
     @staticmethod
-    def _apply_mask(matrix: np.ndarray, binary_mask: str):
+    def _apply_mask(matrix: np.ndarray, binary_mask: str) -> np.ndarray:
         # binary mask = '11'
         # input [ [7, 12, ...], ]
         # intermediate repr [ ['0b111', '0b1100', ...], ]

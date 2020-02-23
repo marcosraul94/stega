@@ -13,9 +13,16 @@ class Constants:
     max_exec_seconds: float = 0.1
 
 
-class Output:
-    input_text: str = 'aá&^'
+class FromText:
+    text: str = 'aá&^'
     to_bytearray: bytearray = b'a\xc3\xa1&^'
     to_ints: np.ndarray = np.array([97, 195, 161, 38, 94])
     to_binary: np.ndarray = np.array(['0b1100001', '0b11000011', '0b10100001', '0b100110', '0b1011110'])
     to_uniform_bytes: np.ndarray = np.array(['01100001', '11000011', '10100001', '00100110', '01011110'])
+
+
+class FromImg:
+    img: np.ndarray = np.array([12, 113])  # ['0b1100', '0b1110001']
+    num_bits = 8
+    num_encoding_bits = 2  # 11 mask
+    prepared: np.ndarray = np.array([12, 112])  # ['0b1100', '0b1110000']
