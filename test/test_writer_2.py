@@ -23,23 +23,6 @@ class WriterSetup(unittest.TestCase):
             self.fail(f'{first} not equal to {second}' + f'{": " + msg if msg else ""}')
 
 
-class BytesShapeTests(WriterSetup):
-    def test_equality(self) -> None:
-        size = 5
-        num_columns = 4
-        correct_output = (1, num_columns)
-        output = Writer(np.arange(size)).bytes_shape
-        self.assertTupleEqual(output, correct_output)
-
-    def test_type(self) -> None:
-        self.assertIsInstance(self.writer.bytes_shape, tuple)
-
-    def test_len(self) -> None:
-        correct_output = 2
-        output = len(self.writer.bytes_shape)
-        self.assertEqual(output, correct_output)
-
-
 class ImgTests(WriterSetup):
     def test_invalid_img(self) -> None:
         self.assertRaises(InvalidImageException, lambda: Writer(np.array([])))
@@ -63,6 +46,45 @@ class ImgTests(WriterSetup):
         self.assertEqual(output, correct_output)
 
 
+class BytesShapeTests(WriterSetup):
+    def test_equality(self) -> None:
+        size = 5
+        num_columns = 4
+        correct_output = (1, num_columns)
+        output = Writer(np.arange(size)).bytes_shape
+        self.assertTupleEqual(output, correct_output)
+
+    def test_type(self) -> None:
+        self.assertIsInstance(self.writer.bytes_shape, tuple)
+
+    def test_len(self) -> None:
+        correct_output = 2
+        output = len(self.writer.bytes_shape)
+        self.assertEqual(output, correct_output)
+
+
+class InsertBytesTests(WriterSetup):
+    def test_equality(self) -> None:
+        self.assertFalse(True)
+
+    def test_type(self) -> None:
+        self.assertFalse(True)
+
+    def test_dtype(self) -> None:
+        self.assertFalse(True)
+
+
+class PrepareInputTests(WriterSetup):
+    def test_equality(self) -> None:
+        self.assertFalse(True)
+
+    def test_type(self) -> None:
+        self.assertFalse(True)
+
+    def test_dtype(self) -> None:
+        self.assertFalse(True)
+
+
 class PrepareImgTests(WriterSetup):
     def test_equality(self) -> None:
         writer = Writer(
@@ -82,7 +104,31 @@ class PrepareImgTests(WriterSetup):
         self.assertEqual(output, correct_output)
 
 
-class ApplyMask(WriterSetup):
+class SplitIntoIntsTests(WriterSetup):
+    def test_equality(self) -> None:
+        self.assertFalse(True)
+
+    def test_type(self) -> None:
+        self.assertFalse(True)
+
+    def test_dtype(self) -> None:
+        self.assertFalse(False)
+
+
+
+
+class ResizeTests(WriterSetup):
+    def test_equality(self) -> None:
+        self.assertFalse(True)
+
+    def test_type(self) -> None:
+        self.assertFalse(True)
+
+    def test_dtype(self) -> None:
+        self.assertFalse(True)
+
+
+class ApplyMaskTests(WriterSetup):
     def test_equality(self) -> None:
         img = np.array([7, 14])  # ['0b111', '0b1110']
         output = self.writer._apply_mask(img, '11111011')
