@@ -65,7 +65,7 @@ class Writer:
     def _uniform_bytes(matrix: np.ndarray) -> np.ndarray:
         # input ['0b100', ]
         # output [ '00000100', ]
-        return np.array([bits.replace('b', '0').zfill(8) for bits in matrix])
+        return np.array([bits.replace('0b', '').zfill(8) for bits in matrix])
 
     @staticmethod
     def _split_into_column_bits(matrix: np.ndarray) -> np.ndarray:
