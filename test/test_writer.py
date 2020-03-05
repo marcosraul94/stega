@@ -7,59 +7,13 @@ from test.values import Constants
 from test.values import FromImg
 from test.values import FromText
 from core.converter import Converter
-from core.image import InvalidImageException
+from test.utils import TestCaseWithArrayEqual
 
 
-class WriterSetup(unittest.TestCase):
+class WriterSetup(TestCaseWithArrayEqual):
     def setUp(self) -> None:
-        self.constants = Constants
-        self.from_img = FromImg
-        self.writer = Writer(self.constants.small_img)
+        self.writer = Writer(Constants.small_img)
         self.converter = Converter()
-
-    def assertArrayEqual(self, first: np.ndarray, second: np.ndarray, msg: str = None) -> None:
-        if not np.array_equal(first, second):
-            self.fail(f'{first} not equal to {second}' + f'{": " + msg if msg else ""}')
-
-
-class ImgTests(WriterSetup):
-    def test_invalid_img(self) -> None:
-        self.assertRaises(InvalidImageException, lambda: Writer(np.array([])))
-
-    def test_type(self) -> None:
-        self.assertIsInstance(self.writer.img, np.ndarray)
-
-    def test_same_dtype(self) -> None:
-        correct_output = np.dtype('uint32')
-        img = self.constants.small_img.astype(correct_output)
-        writer = Writer(img, dtype=correct_output)
-        output = writer.dtype
-        self.assertEqual(correct_output, output)
-
-    def test_diff_dtype(self) -> None:
-        correct_output = np.dtype('uint32')
-        diff_dtype = np.dtype('uint8')
-        img = self.constants.small_img.astype(diff_dtype)
-        writer = Writer(img, dtype=correct_output)
-        output = writer.dtype
-        self.assertEqual(correct_output, output)
-
-
-class BytesShapeTests(WriterSetup):
-    def test_equality(self) -> None:
-        size = 5
-        num_columns = 4
-        correct_output = (1, num_columns)
-        output = Writer(np.arange(size)).bytes_shape
-        self.assertTupleEqual(correct_output, output)
-
-    def test_type(self) -> None:
-        self.assertIsInstance(self.writer.bytes_shape, tuple)
-
-    def test_len(self) -> None:
-        correct_output = 2
-        output = len(self.writer.bytes_shape)
-        self.assertEqual(correct_output, output)
 
 
 class InsertBytesTests(WriterSetup):
@@ -85,9 +39,9 @@ class InsertBytesTests(WriterSetup):
 class PrepareImgTests(WriterSetup):
     def test_equality(self) -> None:
         writer = Writer(
-            self.from_img.img, num_bits=self.from_img.num_bits, num_encoding_bits=self.from_img.num_encoding_bits
+            FromImg.img, num_bits=FromImg.num_bits, num_encoding_bits=FromImg.num_encoding_bits
         )
-        correct_output = self.from_img.prepared
+        correct_output = FromImg.prepared
         output = writer._prepare_img()
         self.assertArrayEqual(correct_output, output)
 
