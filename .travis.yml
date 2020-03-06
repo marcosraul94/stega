@@ -4,5 +4,5 @@ python:
   - 3.7
   - 3.8
 install: pip install -r requirements.txt
-script: coverage run --omit *env/* -m unittest
-after_success: coverage report --omit *env/* -m
+script: coverage run --omit="*env/*,*/test/*" -m unittest discover
+after_success: coverage report --omit="*env/*,*test/*" -m
