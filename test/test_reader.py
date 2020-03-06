@@ -2,8 +2,8 @@ import unittest
 import numpy as np
 
 from core.reader import Reader
-from core.writer import Writer
-from core.converter import Converter
+from test.values import FromImg
+from test.values import FromText
 from test.values import Constants
 from test.utils import TestCaseWithArrayEqual
 
@@ -11,19 +11,39 @@ from test.utils import TestCaseWithArrayEqual
 class ReaderSetup(TestCaseWithArrayEqual):
     def setUp(self) -> None:
         self.reader = Reader(Constants.small_img)
-
-
-class ReadHiddenBytesTests(ReaderSetup):
+        
+        
+class JoinBits(ReaderSetup):
     def test_equality(self) -> None:
-        txt = Constants.char_pool
-        converter = Converter()
-        encoded_txt = converter.encode(txt)
-        encoded_img = Writer(Constants.big_img).insert_bytes(encoded_txt)
-        encoded_rebuilt_txt = Reader(encoded_img).read_hidden_bytes()
-        decoded_rebuilt_txt = converter.decode(encoded_rebuilt_txt)
-        self.assertIn(txt, decoded_rebuilt_txt)
+        correct_output = FromText.to_ints
+        output = self.reader._join_bits(FromText.to_column_bits)
+        self.assertArrayEqual(correct_output, output)
 
-    def test
+    def test_type(self) -> None:
+        output = self.reader._join_bits(FromText.to_column_bits)
+        self.assertIsInstance(output, np.ndarray)
+
+    def test_dtype(self) -> None:
+        correct_output = self.reader.dtype
+        output = self.reader._join_bits(FromText.to_column_bits).dtype
+        self.assertEqual(correct_output, output)
+
+
+class FilterLastBits(ReaderSetup):
+    def test_equality(self) -> None:
+        reader = Reader(FromImg.img, num_encoding_bits=FromImg.num_encoding_bits, num_bits=FromImg.num_bits)
+        correct_output = FromImg.masked_first_bits
+        output = reader._filter_last_bits(FromImg.img)
+        self.assertArrayEqual(correct_output, output)
+
+    def test_type(self) -> None:
+        output = self.reader._filter_last_bits(FromImg.img)
+        self.assertIsInstance(output, np.ndarray)
+
+    def test_dtype(self) -> None:
+        correct_output = np.integer
+        output = self.reader._filter_last_bits(FromImg.img).dtype
+        self.assertEqual(correct_output, output)
 
 
 if __name__ == '__main__':

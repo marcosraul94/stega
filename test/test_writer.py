@@ -41,7 +41,7 @@ class PrepareImgTests(WriterSetup):
         writer = Writer(
             FromImg.img, num_bits=FromImg.num_bits, num_encoding_bits=FromImg.num_encoding_bits
         )
-        correct_output = FromImg.prepared
+        correct_output = FromImg.masked_last_bits
         output = writer._prepare_img()
         self.assertArrayEqual(correct_output, output)
 
@@ -132,23 +132,6 @@ class ResizeTests(WriterSetup):
         correct_output = self.writer.dtype
         output = self.writer._resize(np.ones((1,), dtype=correct_output)).dtype
         self.assertEqual(correct_output, output)
-
-
-class ApplyMaskTests(WriterSetup):
-    def test_equality(self) -> None:
-        img = np.array([7, 14])  # ['0b111', '0b1110']
-        output = self.writer._apply_mask(img, '11111011')
-        correct_output = np.array([3, 10])  # ['0b11', '0b1010']
-        self.assertArrayEqual(output, correct_output)
-
-    def test_type(self) -> None:
-        output = self.writer._apply_mask(self.writer.img, '0')
-        self.assertIsInstance(output, np.ndarray)
-
-    def test_dtype(self) -> None:
-        correct_output = self.writer.dtype
-        output = self.writer._apply_mask(self.writer.img, '0').dtype
-        self.assertEqual(output, correct_output)
 
 
 if __name__ == '__main__':

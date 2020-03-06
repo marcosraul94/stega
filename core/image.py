@@ -33,3 +33,12 @@ class ImgProcessor:
     @property
     def bytes_shape(self) -> tuple:
         return self.img.size // self.num_columns, self.num_columns
+
+    @staticmethod
+    def _apply_mask(matrix: np.ndarray, binary_mask: str) -> np.ndarray:
+        # binary mask = '11'
+        # input [ [7, 12, ...], ]
+        # intermediate repr [ ['0b111', '0b1100', ...], ]
+        # masked intermediate repr [ ['0b100', '0b1100', ...], ]
+        # output [ [4, 12, ...], ]
+        return matrix & int(binary_mask, 2)

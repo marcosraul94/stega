@@ -21,7 +21,7 @@ class ConfigTests(unittest.TestCase):
 
     def test_num_bits(self) -> None:
         num_bytes = 4
-        num_bits = 4 * 8
+        num_bits = num_bytes * 8
         self.config = Config(num_bytes=num_bytes)
         self.assertEqual(self.config.num_bits, num_bits)
 

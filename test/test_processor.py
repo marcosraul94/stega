@@ -45,5 +45,22 @@ class BytesShapeTests(ProcessorSetup):
         self.assertEqual(correct_output, output)
 
 
+class ApplyMaskTests(ProcessorSetup):
+    def test_equality(self) -> None:
+        img = np.array([7, 14])  # ['0b111', '0b1110']
+        output = self.img_processor._apply_mask(img, '11111011')
+        correct_output = np.array([3, 10])  # ['0b11', '0b1010']
+        self.assertArrayEqual(output, correct_output)
+
+    def test_type(self) -> None:
+        output = self.img_processor._apply_mask(self.img_processor.img, '0')
+        self.assertIsInstance(output, np.ndarray)
+
+    def test_dtype(self) -> None:
+        correct_output = self.img_processor.dtype
+        output = self.img_processor._apply_mask(self.img_processor.img, '0').dtype
+        self.assertEqual(output, correct_output)
+
+
 if __name__ == '__main__':
     unittest.main()

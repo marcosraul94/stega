@@ -29,4 +29,5 @@ class FromImg:
     img: np.ndarray = np.array([12, 113])  # ['0b1100', '0b1110001']
     num_bits = 8
     num_encoding_bits = 2  # 11 mask
-    prepared: np.ndarray = np.array([12, 112])  # ['0b1100', '0b1110000']
+    masked_last_bits: np.ndarray = np.array([12, 112])  # ['0b1100', '0b1110000']
+    masked_first_bits: np.ndarray = np.array([0, 1])  # ['0b1100', '0b1110000']
