@@ -1,44 +1,38 @@
+import os
+import cv2
 import numpy as np
 
+from core.reader import Reader
+from core.writer import Writer
+from core.config import Config
 from core.config import DEFAULT_CONFIG
+from core.converter import Converter
 
 
-class InvalidImageException(Exception):
-    pass
+class StegaImage:
+    def __init__(self, path, config: Config = DEFAULT_CONFIG):
+        self.config = config
+        self.load()
 
+    def load(self, path) -> None:
+        self.matrix = cv2.imread(path, cv2.IMREAD_UNCHANGED)
 
-class ImgProcessor:
-    def __init__(self,
-                 image: np.ndarray,
-                 dtype: np.dtype = DEFAULT_CONFIG.dtype,
-                 num_columns: int = DEFAULT_CONFIG.num_columns,
-                 num_bits: int = DEFAULT_CONFIG.num_bits,
-                 num_encoding_bits: int = DEFAULT_CONFIG.num_encoding_bits):
-        self.dtype = dtype
-        self.num_columns = num_columns
-        self.img = image
-        self.num_bits = num_bits
-        self.num_encoding_bits = num_encoding_bits
+    def save(self, output_path: str) -> None:
+        cv2.imwrite(output_path, self.matrix)
 
-    @property
-    def img(self) -> np.ndarray:
-        return self._img
+    def write(self, txt: str) -> None:
+        encoded_data = Converter(self.config.encoding).encode(txt)
+        writer = Writer(
+            self.matrix, self.config.dtype, self.config.num_columns,
+            self.config.num_bits, self.num_encoding_bits
+        )
+        self.matrix = writer.insert_bytes(encoded_data)
 
-    @img.setter
-    def img(self, img: np.ndarray) -> None:
-        if not img.size:
-            raise InvalidImageException('Invalid image data.')
-        self._img = img.astype(self.dtype) if img.dtype != self.dtype else img
-
-    @property
-    def bytes_shape(self) -> tuple:
-        return self.img.size // self.num_columns, self.num_columns
-
-    @staticmethod
-    def _apply_mask(matrix: np.ndarray, binary_mask: str) -> np.ndarray:
-        # binary mask = '11'
-        # input [ [7, 12, ...], ]
-        # intermediate repr [ ['0b111', '0b1100', ...], ]
-        # masked intermediate repr [ ['0b100', '0b1100', ...], ]
-        # output [ [4, 12, ...], ]
-        return matrix & int(binary_mask, 2)
+    def read(self) -> str:
+        reader = Reader(
+            self.matrix, self.config.dtype, self.config.num_columns,
+            self.config.num_bits, self.config.num_encoding_bits
+        )
+        encoded_data = reader.read_hidden_bytes()
+        return Converter(self.config.encoding).decode(encoded_data) 
+        

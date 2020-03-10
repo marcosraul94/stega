@@ -1,3 +1,4 @@
+import os
 import string
 import numpy as np
 
@@ -31,3 +32,13 @@ class FromImg:
     num_encoding_bits = 2  # 11 mask
     masked_last_bits: np.ndarray = np.array([12, 112])  # ['0b1100', '0b1110000']
     masked_first_bits: np.ndarray = np.array([0, 1])  # ['0b1100', '0b1110000']
+
+
+class TestImg:
+    _name: str = 'img'
+    
+    folder_path: str = os.path.dirname(os.path.abspath(__file__))
+    png_path: str = os.path.join(folder_path, f'{_name}.png')
+    jpeg_path: str = os.path.join(folder_path, f'{_name}.jpeg')
+    write_path: str = os.path.join(folder_path, f'test_write_img.{DEFAULT_CONFIG.img_extension}')
+

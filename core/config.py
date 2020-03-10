@@ -1,19 +1,23 @@
 import numpy as np
 
+
 NUM_BYTES: int = 1
 NUM_ENCODING_BITS: int = 2
 ENCODING: str = 'utf-8'
+IMG_EXTENSION: str = 'png'
 
 
 class Config:
     def __init__(self,
                  num_bytes: int = NUM_BYTES,
                  num_encoding_bits: int = NUM_ENCODING_BITS,
-                 encoding: str = ENCODING):
+                 encoding: str = ENCODING,
+                 img_extension: str = IMG_EXTENSION):
 
         self.num_bytes = num_bytes
         self.num_encoding_bits = num_encoding_bits
         self.encoding = encoding
+        self.img_extension = img_extension
 
     @property
     def dtype(self) -> np.dtype:

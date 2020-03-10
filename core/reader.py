@@ -1,6 +1,6 @@
 import numpy as np
 
-from core.image import ImgProcessor
+from core.processor import ImgProcessor
 
 
 class Reader(ImgProcessor):
